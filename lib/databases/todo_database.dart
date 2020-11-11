@@ -29,7 +29,6 @@ class TodoDatabase {
   }
 
   void _onCreate(Database db, int version) async {
-    print('DATABASE CREATION');
     await db.execute("""
       CREATE TABLE $ITEM_TABLE_NAME (
         $COLUMN_ID INTEGER PRIMARY KEY,
@@ -40,29 +39,48 @@ class TodoDatabase {
   }
 
   void _onOpen(Database db) async {
-    print('DATABASE OPEN: Version ${await db.getVersion()}');
+    print('DATABASE $ITEM_TABLE_NAME: OPEN Version ${await db.getVersion()}');
   }
 
   // -- Create Item --
 
-  Future<Item> insertItem(Item item) async {
+  /// Returns the id of row inserted
+  Future<int> insertItem(Item item) async {
     final database = await getDatabase();
     item.id = await database.insert(ITEM_TABLE_NAME, item.toMap());
-    return item;
+    return item.id;
   }
 
   // -- Read Item --
 
+  /// Returns a list of rows that were found
   Future<List<Item>> getAllItems() async {
     final database = await getDatabase();
 
     final List<Map<String, dynamic>> maps =
       await database.query(ITEM_TABLE_NAME);
-      // await database.rawQuery('SELECT * FROM $ITEM_TABLE_NAME')
 
     List<Item> items = [];
     maps.forEach((map) => items.add(Item.fromMap(map)));
 
     return items;
+  }
+
+  // -- Update Item --
+
+  /// Returns the number of changes made
+  Future<int> updateItem(Item item) async {
+    final database = await getDatabase();
+    return await database.update(ITEM_TABLE_NAME, item.toMap(),
+        where: '$COLUMN_ID = ?', whereArgs: [item.id]);
+  }
+
+  // -- Delete Item --
+
+  /// Returns the number of rows affected if a whereClause is passed in.
+  Future<int> deleteItem(Item item) async {
+    final database = await getDatabase();
+    return await database.delete(ITEM_TABLE_NAME,
+        where: '$COLUMN_ID = ?', whereArgs: [item.id]);
   }
 }
