@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_app/data_layer/item.dart';
+import 'package:to_do_app/data_layer/category.dart';
 import 'package:to_do_app/databases/todo_database.dart';
 
 /// A [StatefulWidget] subclass.
@@ -17,7 +17,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
   // FIELDS --------------------------------------------------------------------
 
-  List<Item> _items;
+  List<Category> _categories;
 
   // METHODS -------------------------------------------------------------------
 
@@ -26,71 +26,70 @@ class _ItemsScreenState extends State<ItemsScreen> {
   @override
   void initState() {
     super.initState();
-    _getAllItems();
+    _getAllCategories();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: (_items == null || _items.length == 0 )
+      body: (_categories == null || _categories.length == 0 )
           ? Center(child: Text('No data'))
           : ListView.builder(
-              itemCount: _items.length,
+              itemCount: _categories.length,
               itemBuilder: (_, int position) {
                 return ListTile(
-                  title: Text(_items[position].title),
+                  title: Text(_categories[position].title),
                   leading: IconButton(
                     icon: Icon(Icons.edit),
                     onPressed: () {
-                      final item = _items[position]
-                        ..title = 'Update Item test';
-                      _actionToUpdateItem(item);
+                      final category = _categories[position]
+                        ..title = 'Update Category test';
+                      _actionToUpdateCategory(category);
                     }),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
-                    onPressed: () =>_actionToDeleteItem(_items[position])));
+                    onPressed: () =>_actionToDeleteCategory(_categories[position])));
               }),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: _actionToInsertItem));
+        onPressed: _actionToInsertCategory));
   }
 
-  // -- Item --
+  // -- Category --
 
-  void _getAllItems() async {
-    await TodoDatabase().getAllItems().then((items) =>
-        setState(() => _items = items));
+  void _getAllCategories() async {
+    await TodoDatabase().getAllCategories().then((categories) =>
+        setState(() => _categories = categories));
   }
 
   // -- Action --
 
-  void _actionToInsertItem() async {
-    final item = Item.fromMap(<String, dynamic> {
-      COLUMN_TITLE: 'Item test',
-      COLUMN_IS_DONE: 1
+  void _actionToInsertCategory() async {
+    final category = Category.fromMap(<String, dynamic> {
+      CATEGORY_COLUMN_TITLE: 'Category test'
     });
 
-    final idOfRowInserted = await TodoDatabase().insertItem(item);
-    print('DATABASE $ITEM_TABLE_NAME: INSERT row with id($idOfRowInserted)');
+    final idOfRowInserted = await TodoDatabase().insertCategory(category);
+    print('DATABASE $CATEGORY_TABLE: INSERT row with id($idOfRowInserted)');
 
     // Update UI
-    _getAllItems();
+    _getAllCategories();
   }
 
-  void _actionToUpdateItem(Item item) async {
-    final updatesNumber = await TodoDatabase().updateItem(item);
-    print('DATABASE $ITEM_TABLE_NAME: UPDATE $updatesNumber change(s)');
+  void _actionToUpdateCategory(Category category) async {
+    final updatesNumber = await TodoDatabase().updateCategory(category);
+    print('DATABASE $CATEGORY_TABLE: UPDATE $updatesNumber change(s)');
 
     // Update UI
-    _getAllItems();
+    _getAllCategories();
   }
 
-  void _actionToDeleteItem(Item item) async {
-    final deletedRowsNumber = await TodoDatabase().deleteItem(item);
-    print('DATABASE $ITEM_TABLE_NAME: DELETE $deletedRowsNumber row(s)');
+  void _actionToDeleteCategory(Category category) async {
+    final deletedRowsNumber = await TodoDatabase().deleteCategory(category);
+    print('DATABASE $CATEGORY_TABLE: DELETE $deletedRowsNumber row(s)');
 
     // Update UI
-    _getAllItems();
+    _getAllCategories();
   }
 }
