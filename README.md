@@ -15,8 +15,9 @@
 
 
 ## Wiki
-* [Package provider](https://pub.dev/packages/provider)
 * [Package sqflite](https://pub.dev/packages/sqflite)
+* [Package path](https://pub.dev/packages/path)
+* [Package provider](https://pub.dev/packages/provider)
 
 
 ## Troubleshooting

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_app/data_layer/category.dart';
 import 'package:to_do_app/databases/todo_database.dart';
+import 'package:to_do_app/ui_layer/items_screen.dart';
 
 /// A [StatefulWidget] subclass.
-class ItemsScreen extends StatefulWidget {
+class CategoriesScreen extends StatefulWidget {
   final String title;
-  final Category category;
 
-  ItemsScreen({Key key, this.title, this.category}) : super(key: key);
+  CategoriesScreen({Key key, this.title}) : super(key: key);
 
   @override
-  _ItemsScreenState createState() => _ItemsScreenState();
+  _CategoriesScreenState createState() => _CategoriesScreenState();
 }
 
-/// A [State] of [ItemsScreen] subclass.
-class _ItemsScreenState extends State<ItemsScreen> {
+/// A [State] of [CategoriesScreen] subclass.
+class _CategoriesScreenState extends State<CategoriesScreen> {
 
   // FIELDS --------------------------------------------------------------------
 
@@ -50,7 +50,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                     }),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
-                    onPressed: () =>_actionToDeleteCategory(_categories[position])));
+                    onPressed: () =>_actionToDeleteCategory(_categories[position])),
+                  onTap: () => _navigateToItemsOfCategory(_categories[position]));
               }),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -92,5 +93,14 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
     // Update UI
     _getAllCategories();
+  }
+
+  // -- Navigation --
+
+  void _navigateToItemsOfCategory(Category category) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ItemsScreen(
+            title: "Todo of ${category.title}", category: category)));
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_app/ui_layer/items_screen.dart';
+import 'package:to_do_app/ui_layer/categories_screen.dart';
 
 /// A [StatelessWidget] subclass.
 class MainScreen extends StatelessWidget {
@@ -11,6 +11,6 @@ class MainScreen extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity),
-      home: ItemsScreen(title: 'TODO'));
+      home: CategoriesScreen(title: 'Categories of Todo'));
   }
 }

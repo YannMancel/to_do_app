@@ -1,14 +1,14 @@
 import 'package:path/path.dart' show join;
-import 'package:path_provider/path_provider.dart' as directory;
 import 'package:sqflite/sqflite.dart';
 import 'package:to_do_app/data_layer/category.dart';
 import 'package:to_do_app/data_layer/item.dart';
+
+const String DATABASE_NAME = 'todo_database.db';
 
 class TodoDatabase {
 
   // FIELDS --------------------------------------------------------------------
 
-  final _databaseName = 'todo_database.db';
   Future<Database> _database;
 
   // METHODS -------------------------------------------------------------------
@@ -19,14 +19,11 @@ class TodoDatabase {
   }
 
   Future<Database> _createDatabase() async {
-    // Location of database path
-    final appDirectory = await directory.getApplicationDocumentsDirectory();
-    final String dbPath = join(appDirectory.path, _databaseName);
-
-    final database = await openDatabase(
-        dbPath, version: 1, onCreate: _onCreate, onOpen: _onOpen);
-
-    return database;
+    return await openDatabase(
+        join(await getDatabasesPath(), DATABASE_NAME),
+        version: 1,
+        onCreate: _onCreate,
+        onOpen: _onOpen);
   }
 
   void _onCreate(Database db, int version) async {
@@ -56,7 +53,10 @@ class TodoDatabase {
   /// Returns the id of row inserted
   Future<int> insertCategory(Category category) async {
     final database = await getDatabase();
-    category.id = await database.insert(CATEGORY_TABLE, category.toMap());
+    category.id = await database.insert(
+        CATEGORY_TABLE,
+        category.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.abort);
     return category.id;
   }
 
@@ -76,15 +76,21 @@ class TodoDatabase {
   /// Returns the number of changes made
   Future<int> updateCategory(Category category) async {
     final database = await getDatabase();
-    return await database.update(CATEGORY_TABLE, category.toMap(),
-        where: '$CATEGORY_COLUMN_ID = ?', whereArgs: [category.id]);
+    return await database.update(
+        CATEGORY_TABLE,
+        category.toMap(),
+        where: '$CATEGORY_COLUMN_ID = ?',
+        whereArgs: [category.id],
+        conflictAlgorithm: ConflictAlgorithm.abort);
   }
 
   /// Returns the number of rows affected if a whereClause is passed in.
   Future<int> deleteCategory(Category category) async {
     final database = await getDatabase();
-    return await database.delete(CATEGORY_TABLE,
-        where: '$CATEGORY_COLUMN_ID = ?', whereArgs: [category.id]);
+    return await database.delete(
+        CATEGORY_TABLE,
+        where: '$CATEGORY_COLUMN_ID = ?',
+        whereArgs: [category.id]);
   }
 
   // -- Item --
@@ -92,7 +98,10 @@ class TodoDatabase {
   /// Returns the id of row inserted
   Future<int> insertItem(Item item) async {
     final database = await getDatabase();
-    item.id = await database.insert(ITEM_TABLE, item.toMap());
+    item.id = await database.insert(
+        ITEM_TABLE,
+        item.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.abort);
     return item.id;
   }
 
@@ -112,14 +121,20 @@ class TodoDatabase {
   /// Returns the number of changes made
   Future<int> updateItem(Item item) async {
     final database = await getDatabase();
-    return await database.update(ITEM_TABLE, item.toMap(),
-        where: '$ITEM_COLUMN_ID = ?', whereArgs: [item.id]);
+    return await database.update(
+        ITEM_TABLE,
+        item.toMap(),
+        where: '$ITEM_COLUMN_ID = ?',
+        whereArgs: [item.id],
+        conflictAlgorithm: ConflictAlgorithm.abort);
   }
 
   /// Returns the number of rows affected if a whereClause is passed in.
   Future<int> deleteItem(Item item) async {
     final database = await getDatabase();
-    return await database.delete(ITEM_TABLE,
-        where: '$ITEM_COLUMN_ID = ?', whereArgs: [item.id]);
+    return await database.delete(
+        ITEM_TABLE,
+        where: '$ITEM_COLUMN_ID = ?',
+        whereArgs: [item.id]);
   }
 }
