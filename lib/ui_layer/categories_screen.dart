@@ -43,11 +43,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   title: Text(_categories[position].title),
                   leading: IconButton(
                     icon: Icon(Icons.edit),
-                    onPressed: () {
-                      final category = _categories[position]
-                        ..title = 'Update Category test';
-                      _actionToUpdateCategory(category);
-                    }),
+                    onPressed: () => _showUpdateDialog(_categories[position])),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () =>_actionToDeleteCategory(_categories[position])),
@@ -55,7 +51,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               }),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: _actionToInsertCategory));
+        onPressed: _showAddDialog));
   }
 
   // -- Category --
@@ -67,11 +63,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   // -- Action --
 
-  void _actionToInsertCategory() async {
-    final category = Category.fromMap(<String, dynamic> {
-      CATEGORY_COLUMN_TITLE: 'Category test'
-    });
-
+  void _actionToInsertCategory(String categoryName) async {
+    final category = Category(title: categoryName);
     final idOfRowInserted = await TodoDatabase().insertCategory(category);
     print('DATABASE $CATEGORY_TABLE: INSERT row with id($idOfRowInserted)');
 
@@ -93,6 +86,59 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
     // Update UI
     _getAllCategories();
+  }
+
+  // -- Dialog --
+
+  void _showAddDialog() async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext buildContext) {
+          String categoryName;
+          return SimpleDialog(
+            title: Text('Add new category'),
+            contentPadding: EdgeInsets.all(16.0),
+            children: [
+              TextField(
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(labelText: 'New category'),
+                  onChanged: (name) => categoryName = name),
+              SizedBox(height: 16.0),
+              RaisedButton(
+                  color: Theme.of(context).primaryColor,
+                  child: Text('Add', style: TextStyle(color: Colors.white)),
+                  onPressed: () {
+                    _actionToInsertCategory(categoryName);
+                    Navigator.pop(buildContext);
+                  })
+            ]);
+        });
+  }
+
+  void _showUpdateDialog(Category category) async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext buildContext) {
+          String categoryName;
+          return SimpleDialog(
+              title: Text('Update category'),
+              contentPadding: EdgeInsets.all(16.0),
+              children: [
+                TextField(
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(labelText: category.title),
+                    onChanged: (name) => categoryName = name),
+                SizedBox(height: 16.0),
+                RaisedButton(
+                    color: Theme.of(context).primaryColor,
+                    child: Text('Update', style: TextStyle(color: Colors.white)),
+                    onPressed: () {
+                      _actionToUpdateCategory(
+                          Category(id: category.id, title: categoryName));
+                      Navigator.pop(buildContext);
+                    })
+              ]);
+        });
   }
 
   // -- Navigation --

@@ -22,7 +22,7 @@ class Category {
 
   // CONSTRUCTORS --------------------------------------------------------------
 
-  Category._();
+  Category({this.id, this.title});
 
   Category.fromMap(Map<String, dynamic> map) {
     id = map[CATEGORY_COLUMN_ID];
