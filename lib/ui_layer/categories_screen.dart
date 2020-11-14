@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_app/data_layer/category.dart';
 import 'package:to_do_app/databases/todo_database.dart';
+import 'package:to_do_app/ui_layer/category_dialog.dart';
 import 'package:to_do_app/ui_layer/items_screen.dart';
 
 /// A [StatefulWidget] subclass.
@@ -63,8 +64,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   // -- Action --
 
-  void _actionToInsertCategory(String title) async {
-    final category = Category(title: title);
+  void _actionToInsertCategory(Category category) async {
     final idOfRowInserted = await TodoDatabase().insertCategory(category);
     print('DATABASE $CATEGORY_TABLE: INSERT row with id($idOfRowInserted)');
 
@@ -93,52 +93,20 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   void _showAddDialog() async {
     return showDialog(
         context: context,
-        builder: (BuildContext buildContext) {
-          String categoryName;
-          return SimpleDialog(
-            title: Text('Add new category'),
-            contentPadding: EdgeInsets.all(16.0),
-            children: [
-              TextField(
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(labelText: 'New category'),
-                  onChanged: (name) => categoryName = name),
-              SizedBox(height: 16.0),
-              RaisedButton(
-                  color: Theme.of(context).primaryColor,
-                  child: Text('Add', style: TextStyle(color: Colors.white)),
-                  onPressed: () {
-                    _actionToInsertCategory(categoryName);
-                    Navigator.pop(buildContext);
-                  })
-            ]);
-        });
+        builder: (BuildContext buildContext) =>
+            CategoryDialog(
+                mode: Mode.INSERT,
+                actionOnClick: _actionToInsertCategory));
   }
 
   void _showUpdateDialog(Category category) async {
     return showDialog(
         context: context,
-        builder: (BuildContext buildContext) {
-          String categoryName;
-          return SimpleDialog(
-              title: Text('Update category'),
-              contentPadding: EdgeInsets.all(16.0),
-              children: [
-                TextField(
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(labelText: category.title),
-                    onChanged: (name) => categoryName = name),
-                SizedBox(height: 16.0),
-                RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    child: Text('Update', style: TextStyle(color: Colors.white)),
-                    onPressed: () {
-                      _actionToUpdateCategory(
-                          Category(id: category.id, title: categoryName));
-                      Navigator.pop(buildContext);
-                    })
-              ]);
-        });
+        builder: (BuildContext buildContext) =>
+            CategoryDialog(
+                mode: Mode.UPDATE,
+                actionOnClick: _actionToUpdateCategory,
+                oldCategory: category));
   }
 
   // -- Navigation --
