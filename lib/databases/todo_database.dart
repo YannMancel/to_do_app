@@ -106,11 +106,13 @@ class TodoDatabase {
   }
 
   /// Returns a list of rows that were found
-  Future<List<Item>> getAllItems() async {
+  Future<List<Item>> getItemsAccordingToCategoryId(int categoryId) async {
     final database = await getDatabase();
 
-    final List<Map<String, dynamic>> maps =
-      await database.query(ITEM_TABLE);
+    final List<Map<String, dynamic>> maps = await database.query(
+        ITEM_TABLE,
+        where: '$ITEM_COLUMN_CATEGORY_ID = ?',
+        whereArgs: [categoryId]);
 
     List<Item> items = [];
     maps.forEach((map) => items.add(Item.fromMap(map)));

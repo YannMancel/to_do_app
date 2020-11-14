@@ -63,8 +63,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   // -- Action --
 
-  void _actionToInsertCategory(String categoryName) async {
-    final category = Category(title: categoryName);
+  void _actionToInsertCategory(String title) async {
+    final category = Category(title: title);
     final idOfRowInserted = await TodoDatabase().insertCategory(category);
     print('DATABASE $CATEGORY_TABLE: INSERT row with id($idOfRowInserted)');
 

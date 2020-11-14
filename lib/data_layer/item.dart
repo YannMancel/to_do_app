@@ -31,7 +31,7 @@ class Item {
 
   // CONSTRUCTORS --------------------------------------------------------------
 
-  Item._();
+  Item({this.id, this.categoryId, this.title, this.description, this.isDone});
 
   Item.fromMap(Map<String, dynamic> map) {
     id = map[ITEM_COLUMN_ID];
