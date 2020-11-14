@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_app/data_layer/category.dart';
 import 'package:to_do_app/databases/todo_database.dart';
-import 'package:to_do_app/ui_layer/category_dialog.dart';
-import 'package:to_do_app/ui_layer/items_screen.dart';
+import 'package:to_do_app/ui_layer/dialogs/category_dialog.dart';
+import 'package:to_do_app/ui_layer/screens/items_screen.dart';
 
 /// A [StatefulWidget] subclass.
 class CategoriesScreen extends StatefulWidget {
@@ -93,20 +93,18 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   void _showAddDialog() async {
     return showDialog(
         context: context,
-        builder: (BuildContext buildContext) =>
-            CategoryDialog(
-                mode: Mode.INSERT,
-                actionOnClick: _actionToInsertCategory));
+        builder: (_) => CategoryDialog(
+            mode: Mode.INSERT,
+            actionOnClick: _actionToInsertCategory));
   }
 
   void _showUpdateDialog(Category category) async {
     return showDialog(
         context: context,
-        builder: (BuildContext buildContext) =>
-            CategoryDialog(
-                mode: Mode.UPDATE,
-                actionOnClick: _actionToUpdateCategory,
-                oldCategory: category));
+        builder: (_) => CategoryDialog(
+            mode: Mode.UPDATE,
+            actionOnClick: _actionToUpdateCategory,
+            oldCategory: category));
   }
 
   // -- Navigation --

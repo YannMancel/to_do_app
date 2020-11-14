@@ -1,30 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_app/data_layer/category.dart';
+import 'package:to_do_app/data_layer/item.dart';
 
-typedef Action = void Function(Category category);
+typedef Action = void Function(Item item);
 
 enum Mode { INSERT, UPDATE }
 
 /// A [StatefulWidget] subclass.
-// ignore: must_be_immutable
-class CategoryDialog extends StatefulWidget {
-  Mode mode;
-  Action actionOnClick;
-  Category oldCategory;
+class ItemDialog extends StatefulWidget {
+  final Mode mode;
+  final int categoryId;
+  final Action actionOnClick;
+  final Item oldItem;
 
-  CategoryDialog(
-      {@required this.mode, @required this.actionOnClick, this.oldCategory});
+  ItemDialog({
+    @required this.mode,
+    @required this.categoryId,
+    @required this.actionOnClick,
+    this.oldItem});
 
   @override
-  _CategoryDialogState createState() => _CategoryDialogState();
+  _ItemDialogState createState() => _ItemDialogState();
 }
 
-/// A [State] of [CategoryDialog] subclass.
-class _CategoryDialogState extends State<CategoryDialog> {
+/// A [State] of [ItemDialog] subclass.
+class _ItemDialogState extends State<ItemDialog> {
 
   // FIELDS --------------------------------------------------------------------
 
   String _newTitle;
+  String _newDescription;
 
   // METHODS -------------------------------------------------------------------
 
@@ -33,20 +37,21 @@ class _CategoryDialogState extends State<CategoryDialog> {
   @override
   void initState() {
     super.initState();
-    _newTitle = widget.oldCategory?.title ?? '';
+    _newTitle = widget.oldItem?.title ?? '';
+    _newDescription = widget.oldItem?.description ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
         title: Text((widget.mode == Mode.INSERT)
-            ? 'Add new category' : 'Update category'),
+            ? 'Add new Todo' : 'Update Todo'),
         contentPadding: EdgeInsets.all(16.0),
         children: [
           TextField(
               keyboardType: TextInputType.text,
               decoration: InputDecoration(labelText: (widget.mode == Mode.INSERT)
-                  ? 'New category' : widget.oldCategory.title),
+                  ? 'New Todo' : widget.oldItem.title),
               onChanged: (name) => _newTitle = name),
           SizedBox(height: 16.0),
           RaisedButton(
@@ -60,18 +65,25 @@ class _CategoryDialogState extends State<CategoryDialog> {
   // -- Action --
 
   void _onClickButton() {
-    Category category;
+    Item item;
     switch (widget.mode) {
       case Mode.INSERT:
-        category = Category(title: _newTitle);
+        item = Item(
+            categoryId: widget.categoryId,
+            title: _newTitle,
+            description: _newDescription);
         break;
 
       case Mode.UPDATE:
-        category = Category(id: widget.oldCategory.id, title: _newTitle);
+        item = Item(
+            id: widget.oldItem.id,
+            categoryId: widget.oldItem.categoryId,
+            title: _newTitle,
+            description: _newDescription);
         break;
     }
 
-    widget.actionOnClick(category);
+    widget.actionOnClick(item);
     Navigator.pop(context);
   }
 }

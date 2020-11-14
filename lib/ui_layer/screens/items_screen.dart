@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:to_do_app/data_layer/category.dart';
 import 'package:to_do_app/data_layer/item.dart';
 import 'package:to_do_app/databases/todo_database.dart';
+import 'package:to_do_app/ui_layer/dialogs/item_dialog.dart';
 
 /// A [StatefulWidget] subclass.
 class ItemsScreen extends StatefulWidget {
@@ -64,11 +65,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
   // -- Action --
 
-  void _actionToInsertItem(String title, String description) async {
-    final item = Item(
-        categoryId: widget.category.id,
-        title: title,
-        description: description);
+  void _actionToInsertItem(Item item) async {
     final idOfRowInserted = await TodoDatabase().insertItem(item);
     print('DATABASE $ITEM_TABLE: INSERT row with id($idOfRowInserted)');
 
@@ -97,56 +94,19 @@ class _ItemsScreenState extends State<ItemsScreen> {
   void _showAddDialog() async {
     return showDialog(
         context: context,
-        builder: (BuildContext buildContext) {
-          String itemTitle;
-          return SimpleDialog(
-              title: Text('Add new Todo'),
-              contentPadding: EdgeInsets.all(16.0),
-              children: [
-                TextField(
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(labelText: 'New Todo'),
-                    onChanged: (name) => itemTitle = name),
-                SizedBox(height: 16.0),
-                RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    child: Text('Add', style: TextStyle(color: Colors.white)),
-                    onPressed: () {
-                      _actionToInsertItem(itemTitle, null);
-                      Navigator.pop(buildContext);
-                    })
-              ]);
-        });
+        builder: (_) => ItemDialog(
+            mode: Mode.INSERT,
+            categoryId: widget.category.id,
+            actionOnClick: _actionToInsertItem));
   }
 
   void _showUpdateDialog(Item item) async {
     return showDialog(
         context: context,
-        builder: (BuildContext buildContext) {
-          String itemTitle;
-          return SimpleDialog(
-              title: Text('Update Todo'),
-              contentPadding: EdgeInsets.all(16.0),
-              children: [
-                TextField(
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(labelText: item.title),
-                    onChanged: (name) => itemTitle = name),
-                SizedBox(height: 16.0),
-                RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    child: Text('Update', style: TextStyle(color: Colors.white)),
-                    onPressed: () {
-                      _actionToUpdateItem(
-                          Item(
-                              id: item.id,
-                              categoryId: item.categoryId,
-                              title: itemTitle,
-                              description: item.description,
-                              isDone: item.isDone));
-                      Navigator.pop(buildContext);
-                    })
-              ]);
-        });
+        builder: (_) => ItemDialog(
+            mode: Mode.UPDATE,
+            categoryId: widget.category.id,
+            actionOnClick: _actionToUpdateItem,
+            oldItem: item));
   }
 }

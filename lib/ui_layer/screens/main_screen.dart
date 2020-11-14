@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_app/ui_layer/categories_screen.dart';
+import 'package:to_do_app/ui_layer/screens/categories_screen.dart';
 
 /// A [StatelessWidget] subclass.
 class MainScreen extends StatelessWidget {

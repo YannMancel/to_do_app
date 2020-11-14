@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 
 const ITEM_TABLE = 'item';
 const ITEM_COLUMN_ID = 'id';
@@ -31,7 +32,12 @@ class Item {
 
   // CONSTRUCTORS --------------------------------------------------------------
 
-  Item({this.id, this.categoryId, this.title, this.description, this.isDone});
+  Item({
+    this.id,
+    @required this.categoryId,
+    @required this.title,
+    this.description,
+    this.isDone = false});
 
   Item.fromMap(Map<String, dynamic> map) {
     id = map[ITEM_COLUMN_ID];
